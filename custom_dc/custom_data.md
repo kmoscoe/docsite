@@ -290,7 +290,7 @@ entity, variable, date, value [, unit] [, scalingFactor] [, measurementMethod] [
 The columns can be in any order, and you can specify custom names for the headings and use the `columnMappings` field in the JSON file to map them accordingly (see below for details).
 
 These columns are required:
-- `entity`: The DCID of an existing entity in the Data Commons knowledge graph, typically a place. 
+- `entity`: The DCID of an existing entity in the Data Commons knowledge graph, typically a place. For places, you can use the place names listed in [Place types](/place_types.html) and other [special names](#special-names) as headings.
 - `variable`: The DCID of the node you have defined in the MCF. 
 - `date`: The date of the observation and should be in the format _YYYY_, _YYYY_-_MM_, or _YYYY_-_MM_-_DD_. 
 - `value`: See [Observation](#obs) for valid values of this column. 
@@ -321,6 +321,16 @@ dcs:who/Adult_curr_cig_smokers,dcid:country/ARE,2018,6.3
 ```
 
 In this case, the columns need to be mapped to the expected columns listed above; see below for details.
+
+{:.no_toc}
+#### Special place names {#special-names}
+
+You can use these as the `entity` heading:
+- [`dcid`](/glossary.html#dcid) --- An already resolved DCID. Examples:`country/USA`, `geoId/06`
+- `country3AlphaCode` --- Three-character country codes. Examples: `USA`, `CHN`
+- `geoId` --- Place geo IDs. Examples: `06`, `023`
+- `lat#lng` --- Latitude and longitude of the place using the format _lat_#_long_. Example: `38.7#-119.4`
+- `wikidataId` --- Wikidata place identifiers. Example: `Q12345`
 
 #### Observations {#obs}
 
