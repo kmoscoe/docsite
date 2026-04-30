@@ -82,7 +82,7 @@ If you have tried to start a container, and have received a `SQL check failed` e
 -e GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json \
 -v $HOME/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro \
 -e DATA_RUN_MODE=schemaupdate
-gcr.io/datcom-ci/datacommons-data:stable
+gcr.io/datcom-ci/datacommons-data:stable</pre>
     </div>
     </div>
 </div>
