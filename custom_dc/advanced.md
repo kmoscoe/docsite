@@ -134,7 +134,7 @@ To run a local instance of the services container, you need to set all of the GC
             <ol>
               <li>Go to <a href="https://console.cloud.google.com/run/services" target="_blank">https://console.cloud.google.com/run/services</a> for your project, and select the relevant service from the list.</li>
               <li>In the <b>Service details</b> screen, click the <b>Revisions</b> tab.</li>
-              <li>in the right-hand window, select the <b>Containers</b> tab and scroll down to the <b>Environment variables</b> section.</li>
+              <li>In the right-hand window, select the <b>Containers</b> tab and scroll down to the <b>Environment variables</b> section.</li>
               <li>Look up the name of the secret for the <code>DB_PASS</code> variable. It is in the form <code><var>NAMESPACE</var>-datacommons-mysql-password</code>.</li>
               <li>Go to <a href="https://console.cloud.google.com/secret-manager" target="_blank">https://console.cloud.google.com/secret-manager</a> and in the list of secrets, click on the link of the secret name. </li>
               <li>Select <b>Actions</b> > <b>View secret value</b>.</li>
