@@ -172,7 +172,7 @@ To upload data files:
     <ol>
          <li>Navigate to your local "input" directory where your source files are located.</li>
          <li>Run the following command:
-             <pre>gcloud storage cp config.json [<var>PATH</var>/]*.csv  [<var>PATH</var>/]*.mcf gs://<var>BUCKET_NAME</var>/<var>input</var> --region</pre>
+             <pre>gcloud storage cp config.json [<var>PATH</var>/]*.csv  [<var>PATH</var>/]*.mcf gs://<var>BUCKET_NAME</var>/<var>input</var></pre>
           <p>The path names are only required if you are using subdirectories to store your files.</p>
         </li>
       </ol>
@@ -431,8 +431,9 @@ Before running this procedure, please see [Required directory structure](mcp.md#
   </ul>
   <div class="gcp-tab-content">
    <div class="active">
+   <p>Step 1: Upload your files to Google Cloud Storage:
       <ol>
-        <li>Go to <a href="https://console.cloud.google.com/storage/browse" target="_blank">https://console.cloud.google.com/storage/browse</a> for your service and select the [Data Commons bucket](#data) that was created by the Terraform script.</li>
+        <li>Go to <a href="https://console.cloud.google.com/storage/browse" target="_blank">https://console.cloud.google.com/storage/browse</a> for your service and select the <a href="#data">Data Commons bucket</a> that was created by the Terraform script.</li>
         <li>Click <b>Create folder</b>.</li>
         <li>In the <b>Create folder</b> dialog, provide a name for the folder. It can be anything you want; for example, `mcp_instructions`.</li>
         <li>Click on the link of the new folder you just created, and click <b>Create folder</b> again.</li>
@@ -464,7 +465,7 @@ Before running this procedure, please see [Required directory structure](mcp.md#
           The instructions folder can be any name you want.
         </li>
       </ol>
-</p>
+      </p>
   <p>Step 2: Set the environment variable and restart the Cloud Run service:</p>
   <p>From any local directory, run the following command:
       <pre>gcloud run deploy <var>SERVICE_NAME</var> --image <var>CONTAINER_IMAGE_URL</var> --set-env-vars DC_INSTRUCTIONS_DIR=gs://<var>GCS_BUCKET</var>/<var>INSTRUCTIONS_FOLDER</var> --region <var>REGION</var></pre>
