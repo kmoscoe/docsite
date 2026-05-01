@@ -39,7 +39,8 @@ To instruct Gemini CLI to start up a local server using Stdio, replace the `data
 {
    ...
    "mcpServers": {
-      "datacommons-mcp": {
+      # This can be any name you want, e.g. 'datacommons-mcp-local'
+      "<var>SERVER_NAME</var>": {
          "command": "uvx",
          "args": [
             "datacommons-mcp@latest",
@@ -52,6 +53,7 @@ To instruct Gemini CLI to start up a local server using Stdio, replace the `data
    }
    ...
 }
+
 </pre>
 
 [Run Gemini CLI](run_tools.md#run-gemini) as usual.
@@ -112,7 +114,8 @@ The server is addressable with the endpoint `mcp`. For example, `http://my-mcp-s
    <pre>
    {
       "mcpServers": {
-         "datacommons-mcp": {
+         # This can be anything you want, e.g. 'datacommons-mcp-remote'
+         "<var>SERVER_NAME</var>": {
            "httpUrl": "http://<var>HOST</var>:<var>PORT</var>/mcp",
            "headers": {
              "Accept": "application/json, text/event-stream"

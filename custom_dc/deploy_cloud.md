@@ -172,7 +172,7 @@ To upload data files:
     <ol>
          <li>Navigate to your local "input" directory where your source files are located.</li>
          <li>Run the following command:
-             <pre>gcloud storage cp config.json [<var>PATH</var>/]*.csv  [<var>PATH</var>/]*.mcf gs://<var>BUCKET_NAME</var>/<var>input</var></pre>
+             <pre>gcloud storage cp config.json [<var>PATH</var>/]*.csv  [<var>PATH</var>/]*.mcf gs://<var>BUCKET_NAME</var>/<var>input</var> --region</pre>
           <p>The path names are only required if you are using subdirectories to store your files.</p>
         </li>
       </ol>
@@ -205,7 +205,7 @@ Every time you upload new input files to Google Cloud Storage, you will need to 
       </div>
     <div>
     <p>From any local directory, run the following command:
-           <pre>gcloud run jobs execute <var>JOB_NAME</var></pre>
+           <pre>gcloud run jobs execute <var>JOB_NAME</var> --region <var>REGION</var></pre>
   </p>
       </div>
       </div>
@@ -234,7 +234,7 @@ If you have tried to start a container, and have received a `SQL check failed` e
       </div>
     <div>
    <p>From any local directory, run the following command:
-            <pre>gcloud run jobs execute <var>JOB_NAME</var> -update-env-vars DATA_RUN_MODE=schemaupdate</pre>
+            <pre>gcloud run jobs execute <var>JOB_NAME</var> -update-env-vars DATA_RUN_MODE=schemaupdate --region <var>REGION</var></pre>
          </p>
    </div>
   </div>
@@ -311,7 +311,7 @@ Alternatively, you can use the following procedure.
      </ol>
   </div>
   <div><p>From any local directory, run the following command:
-      <pre>gcloud run deploy <var>SERVICE_NAME</var> --image gcr.io/datcom-ci/datacommons-services:stable [<var>OTHER_OPTIONS...</var>]</pre>
+      <pre>gcloud run deploy <var>SERVICE_NAME</var> --image gcr.io/datcom-ci/datacommons-services:stable --region <var>REGION</var> [<var>OTHER_OPTIONS...</var>]</pre>
       You can specify any options as flags (see the <a href="https://docs.cloud.google.com/sdk/gcloud/reference/run/deploy" target="_blank">gcloud deploy reference documentation</a>). For example, to add or change an environment variable, use <code>--set-env-vars</code>.
       </p>
   </div>
@@ -361,7 +361,7 @@ If you want to switch the prebuilt image or use a custom image, use the followin
       </ol>
     </div>
     <div><p>From any local directory, run the following command:
-      <pre>gcloud run deploy <var>SERVICE_NAME</var> --image <var>CONTAINER_IMAGE_URL</var>  [<var>OTHER_OPTIONS...</var>]</pre>
+      <pre>gcloud run deploy <var>SERVICE_NAME</var> --image <var>CONTAINER_IMAGE_URL</var> --region <var>REGION</var> [<var>OTHER_OPTIONS...</var>]</pre>
       The container image URL is the name of a <a href="image.md#prebuilt">prebuilt image</a>, or the package name of a container you have <a href="#upload">uploaded to the Artifact Registry</a>.</p>
      </p>
     </div>
@@ -467,7 +467,7 @@ Before running this procedure, please see [Required directory structure](mcp.md#
 </p>
   <p>Step 2: Set the environment variable and restart the Cloud Run service:</p>
   <p>From any local directory, run the following command:
-      <pre>gcloud run deploy <var>SERVICE_NAME</var> --image <var>CONTAINER_IMAGE_URL</var> --set-env-vars DC_INSTRUCTIONS_DIR=gs://<var>GCS_BUCKET</var>/<var>INSTRUCTIONS_FOLDER</var></pre>
+      <pre>gcloud run deploy <var>SERVICE_NAME</var> --image <var>CONTAINER_IMAGE_URL</var> --set-env-vars DC_INSTRUCTIONS_DIR=gs://<var>GCS_BUCKET</var>/<var>INSTRUCTIONS_FOLDER</var> --region <var>REGION</var></pre>
       <ul>
       <li>The container image URL is a prebuilt Data Commons image, or a custom image you have previously uploaded to the artifact registry.</li>
       <li>The instructions folder is the one you created in the previous step, specified in the form <code>gs://<var>GCS_BUCKET</var>/<var>INSTRUCTIONS_FOLDER</var></code>.</li>
@@ -489,13 +489,13 @@ To connect an AI agent to the Cloud Run service app:
     <pre>{
       ...
       "mcpServers": {
-          "datacommons-mcp": {         
+          "<var>SERVER_NAME</var>": {         
              "httpUrl": "<var>APP_URL</var>/mcp"
           }
       }
       ...
     }</pre>
-
+   The server name can be anything you want, for example, `datacommons-mcp-custom`.
 1. Run the agent as usual.
 
 ## Update your Terraform deployment {#update-terraform}
