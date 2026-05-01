@@ -39,7 +39,7 @@ To instruct Gemini CLI to start up a local server using Stdio, replace the `data
 {
    ...
    "mcpServers": {
-      # This can be any name you want, e.g. 'datacommons-mcp-local'
+      // This can be any name you want, e.g. 'datacommons-mcp-local'
       "<var>SERVER_NAME</var>": {
          "command": "uvx",
          "args": [
