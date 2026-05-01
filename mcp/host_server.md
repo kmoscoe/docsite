@@ -114,7 +114,7 @@ The server is addressable with the endpoint `mcp`. For example, `http://my-mcp-s
    <pre>
    {
       "mcpServers": {
-         # This can be anything you want, e.g. 'datacommons-mcp-remote'
+         // This can be anything you want, e.g. 'datacommons-mcp-remote'
          "<var>SERVER_NAME</var>": {
            "httpUrl": "http://<var>HOST</var>:<var>PORT</var>/mcp",
            "headers": {
