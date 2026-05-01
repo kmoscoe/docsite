@@ -234,7 +234,7 @@ If you have tried to start a container, and have received a `SQL check failed` e
       </div>
     <div>
    <p>From any local directory, run the following command:
-            <pre>gcloud run jobs execute <var>JOB_NAME</var> -update-env-vars DATA_RUN_MODE=schemaupdate --region <var>REGION</var></pre>
+            <pre>gcloud run jobs execute <var>JOB_NAME</var> --update-env-vars DATA_RUN_MODE=schemaupdate --region <var>REGION</var></pre>
          </p>
    </div>
   </div>
