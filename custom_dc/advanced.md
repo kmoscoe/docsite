@@ -35,19 +35,23 @@ To run a local instance of the data management container, you need to set all of
           <div class="active">
             <ol>
               <li>Go to <a href="https://console.cloud.google.com/run/jobs" target="_blank">https://console.cloud.google.com/run/jobs</a> for your project, select the relevant job from the list, and click <b>View and edit job configuration</b>. </li>
-               <li>Scroll to the <b>Containers</b> and select the <b>Variables & Secrets</b> tab. </li>
-              <li>To retrieve the values of secrets, click on the links to the Secret Manager, and click <b>Actions</b> > <b>View secret value</b>. </li>
+               <li>Under the <b>Containers</b> tab, select the <b>Variables & Secrets</b> tab. </li>
+              <li>Look up the name of the secret for the <code>DB_PASS</code> variable. It is in the form <code><var>NAMESPACE</var>-datacommons-mysql-password</code>.</li>
+              <li>Go to <a href="https://console.cloud.google.com/secret-manager" target="_blank">https://console.cloud.google.com/secret-manager</a> and in the list of secrets, click on the link of the secret name. </li>
+              <li>Select <b>Actions</b> > <b>View secret value</b>. Copy the value to your <code>env.list</code> file.</li>
             </ol>
           </div>
           <div>
             <ol>
           <li>Run the following command:
               <pre>gcloud run jobs describe <var>JOB_NAME</var> --region <var>REGION</var></pre></li>
-          <li>To get the values of the secrets, run the following command for each secret listed in the <b>Secrets</b> section of the output:
-              <pre>gcloud secrets versions access latest --secret=<var>SECRET_ID</var></pre>.</li></ol></div></div></div>
-1. In your `env.list` file, copy the values obtained in the previous step, with the exception of `FORCE_RESTART`.
+          <li>From the <code>Secrets</code> section of the output, note the name of the <code>DB_PASS</code> secret. It is in the form <code><var>NAMESPACE</var>-datacommons-mysql-password</code>.</li>
+          <li>Run this command to obtain its value:
+              <pre>gcloud secrets versions access latest --secret=<var>SECRET_ID</var></pre></li>
+              </ol></div></div></div>
+1. Copy all of the variable values obtained above into your `env.list` file, with the exception of `FORCE_RESTART` and `INPUT_DIR`.
 1. Set the value of `INPUT_DIR` to the full local path where your CSV, JSON, and MCF files are located.
-1. If needed, update the value of `OUTPUT_DIR` to the Google Cloud Storage folder where the output should be written, in the form <code>gs://<var>GCS_BUCKET</var>/output</code>.
+1. If needed, update the value of `OUTPUT_DIR` to the Google Cloud Storage folder where the output should be written, in the form <code>gs://<var>GCS_BUCKET</var>/<var>FOLDER</var></code>.
 
 ### Step 2: Run the data management Docker container
 
@@ -131,16 +135,20 @@ To run a local instance of the services container, you need to set all of the GC
               <li>Go to <a href="https://console.cloud.google.com/run/services" target="_blank">https://console.cloud.google.com/run/services</a> for your project, and select the relevant service from the list.</li>
               <li>In the <b>Service details</b> screen, click the <b>Revisions</b> tab.</li>
               <li>in the right-hand window, select the <b>Containers</b> tab and scroll down to the <b>Environment variables</b> section.</li>
-              <li>To retrieve the values of secrets, click on the links to the Secret Manager, and click <b>Actions</b> > <b>View secret value</b>. </li>
+              <li>Look up the name of the secret for the <code>DB_PASS</code> variable. It is in the form <code><var>NAMESPACE</var>-datacommons-mysql-password</code>.</li>
+              <li>Go to <a href="https://console.cloud.google.com/secret-manager" target="_blank">https://console.cloud.google.com/secret-manager</a> and in the list of secrets, click on the link of the secret name. </li>
+              <li>Select <b>Actions</b> > <b>View secret value</b>.</li>
             </ol>
           </div>
           <div>
             <ol>
           <li>Run the following command:
               <pre>gcloud run services describe <var>SERVICE_NAME</var> --region <var>REGION</var></pre></li>
-          <li>To get the values of the secrets, run the following command for each secret listed in the <b>Secrets</b> section of the output:
-              <pre>gcloud secrets versions access latest --secret=<var>SECRET_ID</var></pre>.</li></ol></div></div></div>
-1. Copy the values of all the variables, with the exception of `FORCE_RESTART`, to your `env.list` file.
+           <li>From the <code>Secrets</code> section of the output, note the name of the <code>DB_PASS</code> secret. It is in the form <code><var>NAMESPACE</var>-datacommons-mysql-password</code>.</li>
+          <li>Run this command to obtain its value:
+              <pre>gcloud secrets versions access latest --secret=<var>SECRET_ID</var></pre></li>
+              </ol></div></div></div>
+1. Copy all of the variable values obtained above into your `env.list` file, with the exception of `FORCE_RESTART`.
 
 {: #step2}
 ### Step 2: Run the services Docker container
