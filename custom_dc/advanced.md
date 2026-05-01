@@ -47,6 +47,7 @@ To run a local instance of the data management container, you need to set all of
               <pre>gcloud secrets versions access latest --secret=<var>SECRET_ID</var></pre>.</li></ol></div></div></div>
 1. In your `env.list` file, copy the values obtained in the previous step, with the exception of `FORCE_RESTART`.
 1. Set the value of `INPUT_DIR` to the full local path where your CSV, JSON, and MCF files are located.
+1. If needed, update the value of `OUTPUT_DIR` to the Google Cloud Storage folder where the output should be written, in the form <code>gs://<var>GCS_BUCKET</var>/output</code>.
 
 ### Step 2: Run the data management Docker container
 
@@ -116,7 +117,7 @@ Before you proceed, ensure you have [set up all necessary GCP services](deploy_c
 
 ### Step 1: Set environment variables
 
-To run a local instance of the services container, you need to set all of the environment variables in the `custom_dc/env.list` file, including all the GCP ones. 
+To run a local instance of the services container, you need to set all of the GCP-related environment variables in the `env.list` file.
 
 1. Obtain the values output by Terraform scripts:
     <div class="gcp-tab-group">
