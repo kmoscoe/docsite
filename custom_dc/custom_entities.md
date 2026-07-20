@@ -190,44 +190,63 @@ Within our dataset are indicators about inpatient utilization:
 * total_patient_days
 * total_patient_average_length_of_stay
 
+First, we'll define a new property to capture the concept of a "patient stay" (or "visit):
+
+```
+Node: dcid:inpatientHospitalStayDuration
+typeOf: schema:Property
+name: "Length of inpatient hospital stay"
+domainIncludes: dcid:Patient, dcid:Hospital
+rangeIncludes: dcs:Duration
+```
+
 Now we can define the variables:
 
 ```
-Node: dcid:Count_AllHospitalBeds
+Node: dcid:hcai/Count_Total_HospitalBeds
 typeOf: schema:StatisticalVariable
-name: "Total number of inpatient beds"
+name: "Total number of inpatient beds at the last date of the year"
 populationType: dcid:HospitalBed
 statType: dcs:count
 
-Node: dcid:Count_AllPatients_Discharges
+Node: dcid:hcai/Count_Total_PatientDischarges
 typeOf: schema:StatisticalVariable
 name: "Total number of inpatient discharges"
+description: "Total number of inpatient discharges over the entire year"
 populationType: dcid:Patient
-statType: dcs:count
+statType: dcs:count 
 
-Node: dcid:Count_AllPatients_Days
+Node: dcid:hcai/Count_Days_Total_Patients
 typeOf: schema:StatisticalVariable
 name: "Total number of days of all inpatients in hospital"
+description: "Total number of days for all inpatient stays over the entire year"
 populationType: dcid:Patient
-measuredProperty: dcid:duration
+measuredProperty: dcid:InpatientHospitalStayDuration
 statType: dcs:count
 
-Node: dcid:Mean_Days_Per_Patient
+Node: dcid:hcai/Mean_Days_Per_Patient
 typeOf: schema:StatisticalVariable
 name: "Average length of stay of all inpatients in hospital"
+description: "Mean length of stay, in days, of all inpatient stays over the entire year. Calculated as the total number of patient days divided by the number of patient discharges."
 populationType: dcid:Patient
-measuredProperty: dcid:duration
+measuredProperty: dcid:InpatientHospitalStayDuration
 statType: dcs:meanValue
 ```
 
-Just like for place entities, you provide observations for these variables in a CSV file. The CSV observations file uses the same variable-per-row format and [column headings](custom_data.md#exp-csv) as places. The only difference from a place-based CSV is that the entity column contains the DCIDs of the entities you have defined in a separate CSV (or MCF) file, instead of places. In our example, the DCIDs are the CCNs of the hospitals.
+Just like for place entities, you provide observations for these variables in a CSV file. The CSV observations file uses the same variable-per-row format and [column headings](custom_data.md#exp-csv) as places. The only difference from a place-based CSV is that the entity column contains the DCIDs of the entities you have defined in a separate CSV (or MCF) file, instead of places. In our example, the DCIDs are the facility IDs of the hospitals. We also add a unit (days) where it's relevant and the observation period of one year.
 
 ```csv
-entity,date,variable,value
-
+entity,date,variable,value,unit,observationPeriod
+hcai/106410782,2024,hcai/Count_Total_HospitalBeds,448,,P1Y
+hcai/106410782,2024,hcai/Count_Total_Patients_Discharges,2746,,P1Y
+106410782,2024,hcai/Count_LengthOfStay_Total_Patients,112527,,P1Y
+106410782	2024,hcai/Mean_LengthOfStay_Per_Patient,41,Day,P1Y
+106410806	2024,hcai/Count_Total_HospitalBeds,120,,P1Y
+106410806	2024,hcai/Count_Total_Patients_Discharges,6172,,P1Y
+106410806	2024,hcai/Count_LengthOfStay_Total_Patients,26154,Day,P1Y
+106410806	2024,hcai/Mean_LengthOfStay_Per_Patient,4.2,Day,P1Y
 ...
 ```
-We could also have added an `observationPeriod` column, which would be set to `P1Y` for all rows.
 
 ### Step 5: Add the observations CSV to config.json
 
@@ -239,22 +258,22 @@ Now let's update the config file to cover both the entities and the statistical 
     "hospital_entities.csv": {
       "importType": "entities",
       "rowEntityType": "Hospital",
-      "idColumn": "ccn",
-      "entityColumns": ["City"],
-      "provenance": "Alaska Weekly Hospital Capacity"
+      "idColumn": "facilityId",
+      "entityColumns": ["City", "County"],
+      "provenance": "California Annual Hospital Utilization"
     },
     "hospital_observations.csv": {
       "importType": "observations",
       "format": "variablePerRow",
       "entityType": "Hospital",
-      "provenance": "Alaska Weekly Hospital Capacity"
+      "provenance": "California Annual Hospital Utilization"
     }
   },
-  "sources": {
-    "HHS Protect Public Data Hub": {
-      "url": "https://public-data-hub-dhhs.hub.arcgis.com/",
+ "sources": {
+    "California HHS - HCAI": {
+      "url": "https://data.chhs.ca.gov/organization/department-of-health-care-access-and-information",
       "provenances": {
-        "Alaska Weekly Hospital Capacity": "https://public-data-hub-dhhs.hub.arcgis.com/datasets/d47bfcaac2544c2eb1fcfb3d36b5ed23_0/explore"
+        "California Annual Hospital Utilization": "https://data.chhs.ca.gov/dataset/hospital-annual-utilization-report"
       }
     }
   }
