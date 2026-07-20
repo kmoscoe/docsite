@@ -190,14 +190,19 @@ Within our dataset are indicators about inpatient utilization:
 * total_patient_days
 * total_patient_average_length_of_stay
 
-First, we'll define a new property to capture the concept of a "patient stay" (or "visit):
+First, we'll define a new class and property to capture the concept of a "patient stay" (or "visit"):
 
 ```
+Node: dcid:InpatientHospitalStay
+typeOf: schema:Class
+name: "Inpatient hospital stay"
+subclassOf: dcs:PlaceVisitEvent
+
 Node: dcid:inpatientHospitalStayDuration
 typeOf: schema:Property
 name: "Length of inpatient hospital stay"
-domainIncludes: dcid:Patient, dcid:Hospital
-rangeIncludes: dcs:Duration
+domainIncludes: dcid:Hospital
+rangeIncludes: dcs:TimeUnitOfMeasure
 ```
 
 Now we can define the variables:
@@ -213,22 +218,22 @@ Node: dcid:hcai/Count_Total_PatientDischarges
 typeOf: schema:StatisticalVariable
 name: "Total number of inpatient discharges"
 description: "Total number of inpatient discharges over the entire year"
-populationType: dcid:Patient
+populationType: dcid:InpatientHospitalStay
 statType: dcs:count 
 
 Node: dcid:hcai/Count_Days_Total_Patients
 typeOf: schema:StatisticalVariable
 name: "Total number of days of all inpatients in hospital"
 description: "Total number of days for all inpatient stays over the entire year"
-populationType: dcid:Patient
+populationType: dcid:InpatientHospitalStay
 measuredProperty: dcid:InpatientHospitalStayDuration
 statType: dcs:count
 
-Node: dcid:hcai/Mean_Days_Per_Patient
+Node: dcid:hcai/Mean_LengthOfStay_Total_Patients
 typeOf: schema:StatisticalVariable
 name: "Average length of stay of all inpatients in hospital"
 description: "Mean length of stay, in days, of all inpatient stays over the entire year. Calculated as the total number of patient days divided by the number of patient discharges."
-populationType: dcid:Patient
+populationType: dcid:InpatientHospitalStay
 measuredProperty: dcid:InpatientHospitalStayDuration
 statType: dcs:meanValue
 ```
