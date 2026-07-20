@@ -42,13 +42,13 @@ name: "Hospital bed"
 subClassOf: dcid:Bed
 ```
 
-There is also no existing class for "patient", so we'll define one:
+We also need to define a new class to capture the concept of a "patient stay" (or "visit"), as this is an important measure of hospital utilization:
 
 ```
-Node: dcid:Patient
+Node: dcid:HospitalStay
 typeOf: schema:Class
-name: "Patient"
-subClassOf: dcid:Person
+name: "Inpatient hospital stay"
+subclassOf: dcs:PlaceVisitEvent
 ```
 
 For entity types, an MCF block definition must include the following fields:
@@ -101,13 +101,23 @@ These are the important fields to note:
   * `domainIncludes`, which specify the entity type to which the property can be applied. In this case, it is any entity of `Hospital` type.
   * `rangeIncludes`, which specify the allowable types of the property. In this case, it is the hospital type enum.
 
+Now, we'll define a property of the `HospitalStay` class, whic is the length of stay:
+
+```
+Node: dcid:hospitalStayDuration
+typeOf: schema:Property
+name: "Length of inpatient hospital stay"
+domainIncludes: dcid:HospitalStay
+rangeIncludes: dcs:TimeUnitOfMeasure
+```
+
 In our dataset, patients are also broken down into "inpatient" and "outpatient". It turns out that there is an existing enumeration for patent type: `who/PatientTypeEnum`. So we can derive a property from this that we can use for our data.
 
 ```
 Node: dcid:patientType
 typeOf: schema:Property
 name: "Patient type"
-domainIncludes: dcid:Patient, dcid:HospitalBed
+domainIncludes: dcid:Patient, dcid:HospitalBed, dcid:HospitalStay
 rangeIncludes: dcid:who/PatientTypeEnum
 ```
 
@@ -190,21 +200,6 @@ Within our dataset are indicators about inpatient utilization:
 * total_patient_days
 * total_patient_average_length_of_stay
 
-First, we'll define a new class and property to capture the concept of a "patient stay" (or "visit"):
-
-```
-Node: dcid:InpatientHospitalStay
-typeOf: schema:Class
-name: "Inpatient hospital stay"
-subclassOf: dcs:PlaceVisitEvent
-
-Node: dcid:inpatientHospitalStayDuration
-typeOf: schema:Property
-name: "Length of inpatient hospital stay"
-domainIncludes: dcid:Hospital
-rangeIncludes: dcs:TimeUnitOfMeasure
-```
-
 Now we can define the variables:
 
 ```
@@ -213,29 +208,37 @@ typeOf: schema:StatisticalVariable
 name: "Total number of inpatient beds at the last date of the year"
 populationType: dcid:HospitalBed
 statType: dcs:count
+constraintProperty: dcid:patientType
+patientType: dcid:Inpatient
 
 Node: dcid:hcai/Count_Total_PatientDischarges
 typeOf: schema:StatisticalVariable
 name: "Total number of inpatient discharges"
 description: "Total number of inpatient discharges over the entire year"
-populationType: dcid:InpatientHospitalStay
+populationType: dcid:HospitalStay
 statType: dcs:count 
+constraintProperty: dcid:patientType
+patientType: dcid:Inpatient
 
 Node: dcid:hcai/Count_Days_Total_Patients
 typeOf: schema:StatisticalVariable
 name: "Total number of days of all inpatients in hospital"
 description: "Total number of days for all inpatient stays over the entire year"
-populationType: dcid:InpatientHospitalStay
-measuredProperty: dcid:InpatientHospitalStayDuration
+populationType: dcid:HospitalStay
+measuredProperty: dcid:hospitalStayDuration
 statType: dcs:count
+constraintProperty: dcid:patientType
+patientType: dcid:Inpatient
 
 Node: dcid:hcai/Mean_LengthOfStay_Total_Patients
 typeOf: schema:StatisticalVariable
 name: "Average length of stay of all inpatients in hospital"
 description: "Mean length of stay, in days, of all inpatient stays over the entire year. Calculated as the total number of patient days divided by the number of patient discharges."
 populationType: dcid:InpatientHospitalStay
-measuredProperty: dcid:InpatientHospitalStayDuration
+measuredProperty: dcid:hospitalStayDuration
 statType: dcs:meanValue
+constraintProperty: dcid:patientType
+patientType: dcid:Inpatient
 ```
 
 Just like for place entities, you provide observations for these variables in a CSV file. The CSV observations file uses the same variable-per-row format and [column headings](custom_data.md#exp-csv) as places. The only difference from a place-based CSV is that the entity column contains the DCIDs of the entities you have defined in a separate CSV (or MCF) file, instead of places. In our example, the DCIDs are the facility IDs of the hospitals. We also add a unit (days) where it's relevant and the observation period of one year.
