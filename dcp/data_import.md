@@ -14,7 +14,6 @@ include_scripts:
 {:.no_toc}
 # Import your data
 
-
 ## (Optional) Step 0: Set variable values for this page
 
 If you'd like to copy and paste commands directly from this page to a command line interface, provide the value of the following variable; this will automatically populate all occurrences on this page.
@@ -99,6 +98,8 @@ To verify that the workflow has completed, click the `Workflow Console Link` in 
 > **Important!:** Do not manually cancel a workflow anytime after the **run_preprocessing** stage, or your database will be corrupted. If you do need to cancel a workflow at this stage, you won't be able to restart it without clearing the database lock. See [Release database lock from ingestion workflow](emergency.md#release) for the procedure.
 
 If you encounter workflow failures, see the [Troubleshoot problems](#troubleshoot-problems) section for tips on debugging configuration or data issues.
+
+If your workflow runs too slowly, consider boosting resources; see [Improve ingestion processing times](production.md#ingestion-scaling).
 
 ### Imports with dependencies {#dependencies}
 

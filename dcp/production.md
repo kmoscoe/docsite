@@ -18,25 +18,55 @@ Many of the default settings in the Terraform configuration are intended for dev
 
 > **Note:** You should set up a dedicated production Terraform configuration separate from development. You can use Terraform Workspaces to easily manage multiple configurations, as described in [Manage multiple deployments](https://docs.datacommons.org/custom_dc/deploy_cloud.html#multiple).
 
-## Improve ingestion processing times
+If you'd like to copy and paste commands directly from this page to a command line interface, provide the values for the following variables; this will automatically populate all occurrences on this page.
 
-The time it takes to run the ingestion workflow end to end is directly proportional to the amount of data to be processed. It is also inversely proportional to the resources configured for the following components:
+<label for="project">Google Cloud Platform project ID:</label>
+<input type="text" id="project" data-bind="project" placeholder="Your GCP project ID" />
+<br/>
+<label for="instance">Data Commons Platform instance:</label>
+<input type="text" id="instance" data-bind="instance" placeholder="Your DCP instance" />
+<br/>
 
-* The preprocessing Cloud Batch job
-* The Cloud Dataflow job
-* Spanner 
+## Improve ingestion processing times {#ingestion-scaling}
 
+The time it takes to run the ingestion workflow end to end is directly proportional to the amount of data to be processed. It is also inversely proportional to the resources available to the following ingestion components:
 
+* The Cloud Batch preprocessing job, default name <code><span data-var="instance">Your DCP instance</span></code>-prep-<var>TIMESTAMP</var></code>. This job parses input files and writes out temporary files to GCS. It accounts for a very small proportion of processing time.
+* The Cloud Dataflow job, default name <code><span data-var="instance">Your DCP instance</span>-<var>IMPORT_NAME</var>-<var>TIMESTAMP</var></code>. This job writes nodes, edges and observations to Spanner. It takes the bulk of the processing time.
+* The Spanner instance, which has to process the incoming mutations.
 
-If your workflow takes longer to run that you would like, you can boost the number of resources configured for the 
+(The Cloud Run postprocessing job, which performs aggregations and generates embeddings, also takes up a large part of the processing time, but is not constrained by resources.)
 
-Preprocessing Cloud Batch job: Data preprocessor. Parses CSV and MCF files into JSON-LD chunks. The job validates CSV headers against config.json, outputs partitioned JSON-LD shards
+If your workflow takes longer to run than you would like, you can boost the number of resources configured for the above components. For production purposes, we recommend that you configure these resource reservations in any case. Please see the following section for cost considerations.
 
-Ingestion helper: executes a read-write transaction on the Spanner IngestionLock table (LockID = 'global_ingestion_lock'). It acquires the lock if unowned or if the existing lock timestamp exceeds the stale timeout threshold (configured via timeout parameter). 
-Ingestion Helper Cloud Run Service:  managing database concurrency locks, ingestion status updates, . Provides REST endpoints for Spanner table locks, metadata history,.
+To do so, in your Terraform `terraform.tfvars` file, set these variables as follows:
+```
+ingestion_preprocessing_job_cpu = "16000"
+ingestion_preprocessing_job_memory = "65536"
+ingestion_dataflow_num_workers = 10
+ingestion_dataflow_max_workers = 50
+ingestion_dataflow_worker_machine_type = "n2-standard-8"
+spanner_processing_units = 2000
+```
 
-Dataflow job: Apache Beam Java Dataflow pipeline that validates graph entities, computes FarmHash facet IDs, and commits mutations to Cloud Spanner.  Ingests graph nodes and observations into Cloud Spanner. Dataflow deletes outdated records for replaced imports, computes 64-bit FarmHash facet identifiers, generates search columns, and streams batched mutations into Spanner tables (Node, Edge, Observation, TimeSeries).
+Below is an explanation of these variables.
 
-Postprocessing Cloud Run job: executing BigQuery federated SQL queries to aggregate statistical hierarchies and edge relationships.  Uses BigQuery federated queries over Spanner to generate STAT_VAR_GROUPS, LINKED_EDGES, and ProvenanceSummary. executing BigQuery federated queries over Spanner to generate statistical variable hierarchies (STAT_VAR_GROUPS written to Node and Edge), graph relationships (LINKED_EDGES written to Edge), and dataset summaries (ProvenanceSummary written to KeyValueStore). Releases the distributed lock by calling POST /database/lock/release on dc-ingestion-helper.
+| Variable | Default setting | Recommended production setting | Notes |
+|----------|-----------------|--------------------------------|-------|
+| ingestion_preprocessing_job_cpu  |  "8000" |  "16000" | Values are expressed in milliCPUs. 8 CPUs = 8000; 16 CPUs = 16000 |
+| ingestion_preprocessing_job_memory | "32768" | "65536" | Values are expressed in MiB. 32 GiB = 32768 MiB; 64 GiB = 65536 MiB |
+| ingestion_dataflow_num_workers  | 4 | 10 | For Dataflow auto-scaling, this is the number of workerw to start with. Upping to 10 enables a fast initial start without a cold delay. |
+| ingestion_dataflow_max_workers  |  20 | 50  | This is the maximum number of workers to which Dataflow should autoscale. 50 is recommended for large datasets. |
+| ingestion_dataflow_worker_machine_type | "n2-standard-4" | "n2-standard-8" | Dataflow runs on Google Cloud Compute Engine [machines](https://docs.cloud.google.com/compute/docs/general-purpose-machines#n2_machine_types){: target="_blank"}. n2-standard-4 = 4 vCPUs, 16 GB RAM per worker; n2-standard-8 =  8 vCPUs, 32 GB RAM per worker |
+| spanner_processing_units | 1000 | 2000 | 2000 PUs = 2 Spanner nodes. You may need to scale even higher for heavy bulk imports. |
+
+### Costs
+
+These components incur charges only while an ingestion workflow is actively running:
+
+* **Cloud Batch preprocessing job**: These resources are billed for Compute Engine VM per-second compute usage, only for the minutes/hours the batch container runs. There are no ongoing idle charges. See [Batch pricing](https://cloud.google.com/batch/pricing){: target="_blank"} for more details.
+* **Cloud Dataflow ingestion workers**: These resources are billed for Google Compute Engine VM per-second usage and Dataflow Service Units (DFUs) for the duration of the ingestion pipeline. See [Dataflow compute resources](https://cloud.google.com/dataflow/pricing?hl=en#dataflow-compute-resources){: target="_blank"} for more details.
+
+**Spanner capacity**, on the other hand, is the highest continuous cost driver. Spanner bills per node-hour; scaling from development (1000 PUs/1 node) to production (2000 PUs/2 nodes) doubles fixed Spanner costs. See [Spanner compute capacity](https://cloud.google.com/spanner/pricing#compute-capacity){: target="_blank"} for details on hourly rates by region and edition. Data Commons provisions the Enterprise edition. 
 
 
